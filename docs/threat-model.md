@@ -19,3 +19,13 @@ flowchart LR
   FE --> API[Backend API: Python/FastAPI]
   API --> DB[(Database/Storage)]
   API --> EXT[External Services: OpenAI API, Firebase, etc.]
+
+
+| Threat Category            | Description                              | Example in App                                     | Potential Impact                      | Mitigation                                  |
+| -------------------------- | ---------------------------------------- | -------------------------------------------------- | ------------------------------------- | ------------------------------------------- |
+| **Spoofing**               | Pretending to be another user or service | Weak login form in `static/login.html`             | Account takeover                      | Use MFA, secure session handling            |
+| **Tampering**              | Modifying data or code                   | Unsanitized input passed to API                    | Data corruption, privilege escalation | Input validation, parameterized queries     |
+| **Repudiation**            | Denying actions without audit trail      | No logging of login attempts                       | Difficult forensic analysis           | Centralized logging, signed logs            |
+| **Information Disclosure** | Exposing sensitive data                  | Hardcoded API keys in HTML, verbose error messages | Credential theft, compliance risk     | Secrets in env vars, generic error messages |
+| **Denial of Service**      | Overwhelming the app                     | Unthrottled login form                             | Service downtime                      | Rate limiting, WAF rules                    |
+| **Elevation of Privilege** | Gaining more rights than intended        | Insecure role handling in backend                  | Unauthorized access                   | Enforce RBAC, secure session tokens         |
