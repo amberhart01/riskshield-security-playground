@@ -1,2 +1,0 @@
-NIST CSF Control: ID.AM-01 - Physical devices and systems within the organization are inventoried.
-CIS Control 4.1: Establish and Maintain a Secure Configuration Process.

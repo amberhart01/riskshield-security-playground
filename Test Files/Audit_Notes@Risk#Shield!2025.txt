@@ -1,7 +1,0 @@
-Risk Shield Audit Notes
-
-- Review of NIST 800-53 controls completed.
-- Minor discrepancies found in Access Control documentation.
-- Screenshots pending upload.
-- Next Steps: Validate Control Family PR.AC-1 mappings.
-    
