@@ -19,7 +19,7 @@ flowchart LR
   FE --> API[Backend API: Python/FastAPI]
   API --> DB[(Database/Storage)]
   API --> EXT[External Services: OpenAI API, Firebase, etc.]
-
+```
 
 | Threat Category            | Description                              | Example in App                                     | Potential Impact                      | Mitigation                                  |
 | -------------------------- | ---------------------------------------- | -------------------------------------------------- | ------------------------------------- | ------------------------------------------- |
@@ -29,3 +29,31 @@ flowchart LR
 | **Information Disclosure** | Exposing sensitive data                  | Hardcoded API keys in HTML, verbose error messages | Credential theft, compliance risk     | Secrets in env vars, generic error messages |
 | **Denial of Service**      | Overwhelming the app                     | Unthrottled login form                             | Service downtime                      | Rate limiting, WAF rules                    |
 | **Elevation of Privilege** | Gaining more rights than intended        | Insecure role handling in backend                  | Unauthorized access                   | Enforce RBAC, secure session tokens         |
+
+## 🛑 Abuse Cases
+Abuse Case 1: Attacker injects malicious script in form input → Reflected XSS in dashboard.
+Abuse Case 2: Hardcoded API key in static/*.html harvested → attacker abuses external service.
+Abuse Case 3: Weak login form → brute-force attack → credential stuffing succeeds.
+Abuse Case 4: Large file upload in uploads/ → disk exhaustion → DoS.
+
+## ✅ Mitigations Implemented (or Planned)
+ Move hardcoded secrets to .env + os.environ calls
+ Add server-side input validation and sanitization
+ Configure rate limiting and request size limits
+ Enhance logging for authentication events
+ Apply content security policy (CSP) headers
+
+## 🧪 Security Test Plan
+Test	|Tool	|Expected Outcome|
+|-----|-----|----------------|
+|Static code scan |	Semgrep	 | Identify insecure patterns (e.g., eval, weak crypto)|
+|Dynamic scan	| OWASP ZAP	Report  | common vulns (XSS, SQLi, missing headers)|
+|Dependency audit	| pip-audit, SBOM	| List outdated/vulnerable packages|
+|Secrets detection	|trufflehog / git-secrets	| Ensure no secrets in repo|
+|Manual abuse testing |	Burp Suite/Postman | Confirm exploitability of high-risk findings|
+
+## 📌 Notes
+This threat model is iterative. It will be updated as:
+- New vulnerabilities are found in scans.
+- New features are added to the app.
+- Mitigations are implemented and verified.
