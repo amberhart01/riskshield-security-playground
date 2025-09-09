@@ -31,17 +31,17 @@ flowchart LR
 | **Elevation of Privilege** | Gaining more rights than intended        | Insecure role handling in backend                  | Unauthorized access                   | Enforce RBAC, secure session tokens         |
 
 ## 🛑 Abuse Cases
-Abuse Case 1: Attacker injects malicious script in form input → Reflected XSS in dashboard.
-Abuse Case 2: Hardcoded API key in static/*.html harvested → attacker abuses external service.
-Abuse Case 3: Weak login form → brute-force attack → credential stuffing succeeds.
-Abuse Case 4: Large file upload in uploads/ → disk exhaustion → DoS.
+- Abuse Case 1: Attacker injects malicious script in form input → Reflected XSS in dashboard.
+- Abuse Case 2: Hardcoded API key in static/*.html harvested → attacker abuses external service.
+- Abuse Case 3: Weak login form → brute-force attack → credential stuffing succeeds.
+- Abuse Case 4: Large file upload in uploads/ → disk exhaustion → DoS.
 
 ## ✅ Mitigations Implemented (or Planned)
- Move hardcoded secrets to .env + os.environ calls
- Add server-side input validation and sanitization
- Configure rate limiting and request size limits
- Enhance logging for authentication events
- Apply content security policy (CSP) headers
+- [] Move hardcoded secrets to .env + os.environ calls
+- [] Add server-side input validation and sanitization
+- [] Configure rate limiting and request size limits
+- [] Enhance logging for authentication events
+- [] Apply content security policy (CSP) headers
 
 ## 🧪 Security Test Plan
 Test	|Tool	|Expected Outcome|
