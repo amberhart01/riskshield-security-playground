@@ -37,11 +37,12 @@ flowchart LR
 - Abuse Case 4: Large file upload in uploads/ → disk exhaustion → DoS.
 
 ## ✅ Mitigations Implemented (or Planned)
-- [] Move hardcoded secrets to .env + os.environ calls
-- [] Add server-side input validation and sanitization
-- [] Configure rate limiting and request size limits
-- [] Enhance logging for authentication events
-- [] Apply content security policy (CSP) headers
+- [ ] Move hardcoded secrets to .env + os.environ calls
+- [ ] Add server-side input validation and sanitization
+- [ ] Configure rate limiting and request size limits
+- [ ] Enhance logging for authentication events
+- [ ] Apply content security policy (CSP) headers
+
 
 ## 🧪 Security Test Plan
 Test	|Tool	|Expected Outcome|
