@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Your Account - RiskShield</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-50">
+    <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+      <div class="text-xl font-bold text-blue-600">RiskShield</div>
+      <a href="index.html" class="text-sm text-blue-600 hover:underline"
+        >Home</a
+      >
+    </header>
+
+    <div class="min-h-screen flex items-center justify-center">
+      <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold text-center text-gray-800">
+          Create Your Company Account
+        </h2>
+        <p class="text-center text-gray-500 mb-6">
+          Start by entering the information below
+        </p>
+
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Your Full Name"
+          class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="email"
+          id="email"
+          placeholder="Work Email"
+          class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Create Password"
+          class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="text"
+          id="companyName"
+          placeholder="Company Name"
+          class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg"
+        />
+
+        <button
+          onclick="createCompany()"
+          class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+        >
+          Register
+        </button>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWaM2mHeMnuk1mB6wLlBg4URqrJNoKnEk",
+        authDomain: "risk-shield-5a239.firebaseapp.com",
+        projectId: "risk-shield-5a239",
+        storageBucket: "risk-shield-5a239.appspot.com",
+        messagingSenderId: "201783019936",
+        appId: "1:201783019936:web:662e233bc35eeff6753cc5",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      async function createCompany() {
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const companyName = document.getElementById("companyName").value;
+
+        if (!fullName || !email || !password || !companyName) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        try {
+          // Create user in Firebase Auth
+          const userCredential = await auth.createUserWithEmailAndPassword(
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          // Create new company in Firestore
+          const companyRef = await db.collection("companies").add({
+            name: companyName,
+            createdBy: user.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          // Save user profile to Firestore
+          await db.collection("users").doc(user.uid).set({
+            fullName: fullName,
+            email: email,
+            role: "admin",
+            companyId: companyRef.id,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          alert("Company created successfully! Redirecting to login...");
+          setTimeout(() => {
+            window.location.href = `login.html?email=${encodeURIComponent(
+              email
+            )}`;
+          }, 1000);
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>

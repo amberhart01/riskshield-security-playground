@@ -1,0 +1,27 @@
+# Dockerfile for FastAPI API
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Copy only the necessary files (adjust paths to be relative to the Dockerfile)
+COPY ./api.py ./api.py
+COPY ./backend.py ./backend.py
+COPY ./Template.xlsx ./Template.xlsx
+COPY ./requirements.txt ./requirements.txt
+COPY ./storage.py ./storage.py
+COPY ./encryption_utils.py ./encryption_utils.py
+COPY ./fonts ./fonts
+
+# If you have a static folder for HTML, include it
+COPY ./static ./static
+
+
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose FastAPI port
+EXPOSE 8000
+
+# Start FastAPI app
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

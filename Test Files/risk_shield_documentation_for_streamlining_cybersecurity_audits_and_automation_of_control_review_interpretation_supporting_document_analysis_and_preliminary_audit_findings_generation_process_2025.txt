@@ -1,0 +1,9 @@
+Risk Shield - Full Process Documentation
+
+
+    1. Intake supporting documents (policies, screenshots, compliance reports)
+    2. Parse and interpret control mappings (NIST CSF, CIS v8, ISO 27001)
+    3. Auto-generate preliminary audit findings based on gaps detected
+    4. Deliver draft report for consultant validation
+    5. Optimize time-to-delivery and consultant workload reduction by 40%
+    

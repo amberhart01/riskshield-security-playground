@@ -1,0 +1,51 @@
+flowchart TD
+
+%% User Interface
+    A1["User uploads documents"]
+    A2["User selects framework (e.g. NIST or CIS)"]
+    A3["View results & download report"]
+
+    subgraph UI["User Interface"]
+        A1 --> A2 --> A3
+    end
+
+%% Backend / Orchestration
+    B1["Document Parser (PDF, DOCX, TXT)"]
+    B2["Chunking & Cleaning"]
+    B3["Embedding Generation"]
+    B4["Vector Store (FAISS, ChromaDB)"]
+    B5["LLM Prompt Chain (LangChain)"]
+    B6["Control Understanding"]
+    B7["Document Analysis"]
+    B8["Findings & Report Generator"]
+
+    subgraph Backend["Backend / Orchestration"]
+        B1 --> B2 --> B3 --> B4
+        B5 --> B6 --> B7 --> B8
+        B4 --> B5
+    end
+
+%% LLM Services
+    C1["OpenAI API or Ollama"]
+
+    subgraph LLM["LLM Services"]
+        C1
+    end
+
+%% Deployment
+    D1["Web Hosting (Streamlit, AWS, etc.)"]
+    D2["Storage (e.g. S3, Local)"]
+
+    subgraph Deploy["Deployment"]
+        D1
+        D2
+    end
+
+%% Cross-connections
+    A1 --> B1
+    A2 --> B5
+    B5 --> C1
+    B8 --> A3
+    B1 --> D2
+    A3 --> D2
+    B5 --> D1

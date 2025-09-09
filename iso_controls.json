@@ -1,0 +1,122 @@
+[
+  {
+    "control_id": "A.8.1",
+    "title": "User endpoint protection",
+    "objective": "Secure employee devices against malware and unauthorized access.",
+    "implementation_guidance": [
+      "Implement antivirus software",
+      "Use endpoint protection solutions",
+      "Apply encryption on workstations and mobile devices"
+    ]
+  },
+  {
+    "control_id": "A.8.2",
+    "title": "Network security",
+    "objective": "Prevent unauthorized access and mitigate network-based threats.",
+    "implementation_guidance": [
+      "Use firewalls",
+      "Deploy intrusion detection/prevention systems (IDS/IPS)",
+      "Implement virtual private networks (VPNs)"
+    ]
+  },
+  {
+    "control_id": "A.8.3",
+    "title": "Application security",
+    "objective": "Protect software applications from vulnerabilities and attacks.",
+    "implementation_guidance": [
+      "Enforce secure coding practices",
+      "Conduct penetration testing",
+      "Apply regular security patches"
+    ]
+  },
+  {
+    "control_id": "A.8.4",
+    "title": "Secure system configuration",
+    "objective": "Reduce system vulnerabilities through standardized security settings.",
+    "implementation_guidance": [
+      "Define secure configurations for operating systems",
+      "Secure databases",
+      "Harden application configurations"
+    ]
+  },
+  {
+    "control_id": "A.8.5",
+    "title": "Malware protection",
+    "objective": "Detect and prevent malware infections in IT environments.",
+    "implementation_guidance": [
+      "Deploy anti-malware solutions",
+      "Implement email filtering",
+      "Restrict execution of unauthorized software"
+    ]
+  },
+  {
+    "control_id": "A.8.6",
+    "title": "Data encryption",
+    "objective": "Ensure sensitive data remains protected against unauthorized access.",
+    "implementation_guidance": [
+      "Encrypt data at rest",
+      "Encrypt data in transit",
+      "Use strong cryptographic algorithms"
+    ]
+  },
+  {
+    "control_id": "A.8.7",
+    "title": "Logging and monitoring",
+    "objective": "Detect security incidents through real-time monitoring.",
+    "implementation_guidance": [
+      "Use SIEM systems",
+      "Track and analyze security events",
+      "Enable audit logging"
+    ]
+  },
+  {
+    "control_id": "A.8.8",
+    "title": "Backup and recovery",
+    "objective": "Ensure data availability in case of cyberattacks or system failures.",
+    "implementation_guidance": [
+      "Implement automated backups",
+      "Use offsite data storage",
+      "Conduct regular recovery testing"
+    ]
+  },
+  {
+    "control_id": "A.8.9",
+    "title": "Identity and access management",
+    "objective": "Control user access to systems and sensitive information.",
+    "implementation_guidance": [
+      "Implement role-based access control (RBAC)",
+      "Use multi-factor authentication (MFA)",
+      "Manage privileged access"
+    ]
+  },
+  {
+    "control_id": "A.8.10",
+    "title": "Secure authentication",
+    "objective": "Prevent unauthorized logins and credential theft.",
+    "implementation_guidance": [
+      "Enforce strong password policies",
+      "Use biometric authentication",
+      "Enable single sign-on (SSO)"
+    ]
+  },
+  {
+    "control_id": "A.8.11",
+    "title": "Cloud security",
+    "objective": "Protect data stored and processed in cloud environments.",
+    "implementation_guidance": [
+      "Use CASB",
+      "Encrypt cloud data",
+      "Implement CSPM tools"
+    ]
+  },
+  {
+    "control_id": "A.8.12",
+    "title": "Security testing and vulnerability management",
+    "objective": "Identify and remediate security weaknesses in IT systems.",
+    "implementation_guidance": [
+      "Conduct vulnerability assessments",
+      "Patch regularly",
+      "Perform security audits"
+    ]
+  }
+]

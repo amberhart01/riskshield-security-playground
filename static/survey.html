@@ -1,0 +1,44 @@
+<form id="surveyForm">
+  <label><input type="checkbox" name="has_cyber_policy" /> Cyber Policy in place</label><br/>
+  <label><input type="checkbox" name="uses_mfa" /> MFA enabled</label><br/>
+  <label><input type="checkbox" name="has_asset_inventory" /> Asset Inventory exists</label><br/>
+  <label><input type="checkbox" name="has_incident_response_plan" /> IR Plan exists</label><br/>
+  <label><input type="checkbox" name="has_security_staff" /> Dedicated Security Staff</label><br/>
+  <select name="business_size">
+    <option value="micro">Micro</option>
+    <option value="small">Small</option>
+    <option value="medium">Medium</option>
+  </select><br/><br/>
+
+  <button type="submit">Submit Survey</button>
+</form>
+
+<div id="results"></div>
+
+<script>
+  document.getElementById("surveyForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const data = {
+      has_cyber_policy: form.has("has_cyber_policy"),
+      uses_mfa: form.has("uses_mfa"),
+      has_asset_inventory: form.has("has_asset_inventory"),
+      has_incident_response_plan: form.has("has_incident_response_plan"),
+      has_security_staff: form.has("has_security_staff"),
+      business_size: form.get("business_size"),
+    };
+
+    const res = await fetch("/survey", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+    document.getElementById("results").innerHTML = `
+      <h3>You're in ${result.tier}</h3>
+      <p>Recommended CSF Controls: ${result.recommended_controls.join(", ")}</p>
+      <a href="dashboard.html" class="text-blue-600 underline">Continue to Upload Documents</a>
+    `;
+  });
+</script>

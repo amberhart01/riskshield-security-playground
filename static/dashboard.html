@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RiskShield Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-50">
+    
+      <header class="bg-gray-900 text-white py-4 px-6 flex justify-between items-center">
+  <div class="text-2xl font-bold">RiskShield</div>
+  <div class="flex items-center space-x-4">
+    <div class="relative">
+      <button onclick="toggleMenu()" class="text-white focus:outline-none">
+        ☰
+      </button>
+      <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
+  <a href="#" onclick="openSettingsModal(); toggleMenu(); return false;" class="block px-4 py-2 hover:bg-gray-100">Home</a>
+  <a href="#" onclick="openTeamModal(); toggleMenu(); return false;" class="block px-4 py-2 hover:bg-gray-100">Resources</a>
+  <a href="#" onclick="openBillingModal(); toggleMenu(); return false;" class="block px-4 py-2 hover:bg-gray-100">Contact</a>
+ </div>
+    </div>
+    <button onclick="logout()" class="text-sm bg-blue-500 px-3 py-1 rounded hover:bg-blue-600">Logout</button>
+  </div>
+
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+      
+
+      <div class="mb-6 flex justify-end">
+        <button id="inviteButton" onclick="openInviteModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 hidden">
+          Invite Team Member
+        </button>
+      </div>
+
+      <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700">Welcome, <span id="userName"></span></h2>
+        <p class="text-gray-600 mt-1">Company: <span id="companyName"></span></p>
+      </section>
+
+      <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Upload Documents</h2>
+        <form id="uploadForm" method="post" action="/upload" enctype="multipart/form-data">
+          <label for="fileUpload" class="block text-gray-600 font-medium mb-1">Upload Documents (PDF, DOC, DOCX, TXT)</label>
+          <input
+            type="file"
+            id="fileUpload"
+            name="fileUpload"
+            accept=".pdf,.doc,.docx, .txt"
+            multiple
+            class="w-full border border-gray-300 p-2 rounded-lg mb-4"
+          />
+
+                    <button
+            type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit for Assessment
+          </button>
+        </form>
+        <div id="downloadContainer" class="mt-4"></div>
+      </section>
+      
+  <!-- Existing Reports -->
+      <section class="bg-white shadow-lg rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Assessment Reports</h2>
+        <ul id="reportList" class="text-gray-700 space-y-4">
+  <li id="noReports" class="text-gray-500 italic">No assessment reports available yet.</li>
+</ul>
+      <!-- Settings Modal -->
+      <div id="settingsModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">User Settings</h3>
+          <label class="block text-gray-700">Name</label>
+<input type="text" id="settingsName"  class="w-full border px-3 py-2 rounded mb-4">
+          <label class="block text-gray-700">Email</label>
+<input type="email" id="settingsEmail"  class="w-full border px-3 py-2 rounded mb-4">
+          <p class="text-gray-700 mb-6"><strong>Role:</strong> <span id="settingsRole"></span></p>
+          <div class="flex justify-end space-x-2">
+  <button onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Close</button>
+  
+          </div>
+        </div>
+      </div>
+
+      <!-- Invite Modal -->
+      <div id="inviteModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Invite a Team Member</h3>
+          <label class="block mb-2 text-gray-700">Email Address</label>
+          <input type="email" id="inviteEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" placeholder="teammember@example.com">
+
+          <label class="block mb-2 text-gray-700">Role</label>
+          <select id="inviteRole" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+
+          <div class="flex justify-end space-x-2">
+            <button onclick="closeInviteModal()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Cancel</button>
+            <button onclick="sendInvite()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Send Invite</button>
+          </div>
+        </div>
+      </div>
+
+
+   <!-- Firebase + Dashboard Logic -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBWaM2mHeMnuk1mB6wLlBg4URqrJNoKnEk",
+    authDomain: "risk-shield-5a239.firebaseapp.com",
+    projectId: "risk-shield-5a239",
+    storageBucket: "risk-shield-5a239.appspot.com",
+    messagingSenderId: "201783019936",
+    appId: "1:201783019936:web:662e233bc35eeff6753cc5"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  function toggleMenu() {
+    const menu = document.getElementById("menuDropdown");
+    menu.classList.toggle("hidden");
+  }
+
+  function openSettingsModal() {
+    document.getElementById("settingsModal").classList.remove("hidden");
+  }
+
+  function closeSettingsModal() {
+    document.getElementById("settingsModal").classList.add("hidden");
+  }
+
+  function openInviteModal() {
+    document.getElementById("inviteModal").classList.remove("hidden");
+  }
+
+  function closeInviteModal() {
+    document.getElementById("inviteModal").classList.add("hidden");
+  }
+
+  function sendInvite() {
+    const email = document.getElementById("inviteEmail").value;
+    const role = document.getElementById("inviteRole").value;
+
+    if (!email) {
+      alert("Please enter an email address.");
+      return;
+    }
+
+    alert(`Invite sent to ${email} with role ${role} (stub).`);
+    closeInviteModal();
+  }
+
+  function logout() {
+    auth.signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  }
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return (window.location.href = "login.html");
+
+    const userDoc = await db.collection("users").doc(user.uid).get();
+    const userData = userDoc.data();
+
+    document.getElementById("userName").innerText = userData.fullName || user.email;
+    document.getElementById("settingsName").value = userData.fullName || user.email;
+    document.getElementById("settingsEmail").value = userData.email;
+    document.getElementById("settingsRole").innerText = userData.role;
+
+    if (userData.role === "admin") {
+      document.getElementById("inviteButton").classList.remove("hidden");
+    }
+
+    const companyDoc = await db.collection("companies").doc(userData.companyId).get();
+    if (companyDoc.exists) {
+      document.getElementById("companyName").innerText = companyDoc.data().name;
+    }
+
+    const reportsRef = await db.collection("assessments")
+      .where("companyId", "==", userData.companyId)
+      .orderBy("generatedAt", "desc")
+      .get();
+
+    const reportList = document.getElementById("reportList");
+    const noReports = document.getElementById("noReports");
+
+    if (!reportsRef.empty) {
+      if (noReports) noReports.remove();
+      reportsRef.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-medium">${data.title || 'Untitled Report'}</p>
+              <p class="text-sm text-gray-500">Generated: ${new Date(data.generatedAt.toDate()).toLocaleDateString()}</p>
+            </div>
+            <a href="${data.downloadUrl}" class="text-blue-600 hover:underline">Download</a>
+          </div>
+        `;
+        reportList.appendChild(li);
+      });
+    }
+  });
+</script>
+
+    <!-- Upload-Intercept Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("🔍 upload script loaded");
+        const form = document.getElementById("uploadForm");
+        console.log("uploadForm →", form);
+
+        const fileInput = document.getElementById("fileUpload");
+        const downloadContainer = document.getElementById("downloadContainer");
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          submitBtn.disabled = true;
+          downloadContainer.innerHTML = "";
+
+          if (!fileInput.files.length) {
+            alert("Please select a document first.");
+            submitBtn.disabled = false;
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("fileUpload", fileInput.files[0]);
+
+          try {
+            const res = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || res.statusText);
+            }
+            const { report_file } = await res.json();
+
+            const link = document.createElement("a");
+            link.href = `/report/${report_file}`;
+            link.download = report_file;
+            link.textContent = "📄 Download Your Report";
+            link.className =
+              "inline-block border-2 border-blue-500 text-blue 500 font-semibold py-2 px-4 rounded-lg hover:bg-blue-700";
+            downloadContainer.appendChild(link);
+          } catch (err) {
+            console.error(err);
+            alert("Upload failed: " + err.message);
+          } finally {
+            submitBtn.disabled = false;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

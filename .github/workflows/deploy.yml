@@ -1,0 +1,68 @@
+name: Build and Deploy RiskShield API
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set environment-specific variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENV_TAG=prod" >> $GITHUB_ENV
+            echo "WEBAPP_NAME=riskshieldwebapp-pr" >> $GITHUB_ENV
+            echo "RESOURCE_GROUP=riskshield-dev" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "ENV_TAG=dev" >> $GITHUB_ENV
+            echo "WEBAPP_NAME=riskshield-api-dev" >> $GITHUB_ENV
+            echo "RESOURCE_GROUP=riskshield-dev" >> $GITHUB_ENV
+          fi
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: riskshieldacr.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Docker image to ACR
+        run: |
+          docker build -f Dockerfile.api -t riskshieldacr.azurecr.io/riskshield-api:${{ env.ENV_TAG }} .
+          docker push riskshieldacr.azurecr.io/riskshield-api:${{ env.ENV_TAG }}
+          
+      - name: Azure Login (DEV)
+        if: github.ref == 'refs/heads/develop'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+        
+      - name: Azure Login (PROD)
+        if: github.ref == 'refs/heads/main'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+
+      - name: Update Web App Container Image
+        run: |
+          az webapp config container set \
+            --name $WEBAPP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --docker-custom-image-name riskshieldacr.azurecr.io/riskshield-api:${{ env.ENV_TAG }} \
+            --docker-registry-server-url https://riskshieldacr.azurecr.io \
+            --docker-registry-server-user ${{ secrets.ACR_USERNAME }} \
+            --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Restart Azure Web App
+        run: |
+          az webapp restart --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP

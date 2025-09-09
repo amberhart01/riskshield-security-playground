@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join RiskShield</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-blue-600">RiskShield</h1>
+        <p class="text-sm text-gray-500">
+          Cybersecurity Assessments. Simplified.
+        </p>
+      </div>
+
+      <p class="text-center text-gray-700 mb-6">
+        <span id="inviterName">Someone</span> has invited you to join
+        <span id="companyName">Sample Company</span> on RiskShield.
+      </p>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">
+        You're Invited!
+      </h2>
+      <p class="text-center text-gray-600 mb-6">
+        Join your company on RiskShield
+      </p>
+
+      <div class="mb-4">
+        <label class="block text-gray-700">Email (locked)</label>
+        <input
+          id="inviteEmail"
+          type="email"
+          class="w-full border px-4 py-2 rounded bg-gray-100 cursor-not-allowed"
+          disabled
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700">Full Name</label>
+        <input
+          id="fullName"
+          type="text"
+          placeholder="Your name"
+          class="w-full border px-4 py-2 rounded"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700">Password</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Create a password"
+          class="w-full border px-4 py-2 rounded"
+        />
+      </div>
+
+      <button
+        onclick="acceptInvite()"
+        class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+      >
+        Create Account
+      </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWaM2mHeMnuk1mB6wLlBg4URqrJNoKnEk",
+        authDomain: "risk-shield-5a239.firebaseapp.com",
+        projectId: "risk-shield-5a239",
+        storageBucket: "risk-shield-5a239.appspot.com",
+        messagingSenderId: "201783019936",
+        appId: "1:201783019936:web:662e233bc35eeff6753cc5",
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      let inviteData;
+
+      async function loadInvite() {
+        if (!token) return alert("Invalid invite link");
+
+        const snapshot = await db.collection("invites").doc(token).get();
+        if (!snapshot.exists)
+          return alert("This invite has expired or is invalid.");
+
+        inviteData = snapshot.data();
+        document.getElementById("inviteEmail").value = inviteData.email;
+
+        // Load inviter name and company
+        document.getElementById("inviterName").innerText =
+          inviteData.inviterName || "Someone";
+
+        const companyDoc = await db
+          .collection("companies")
+          .doc(inviteData.companyId)
+          .get();
+        const companyData = companyDoc.exists ? companyDoc.data() : null;
+        document.getElementById("companyName").innerText = companyData
+          ? companyData.name
+          : "a company";
+      }
+
+      async function acceptInvite() {
+        const fullName = document.getElementById("fullName").value;
+        const password = document.getElementById("password").value;
+
+        if (!fullName || !password) return alert("Please complete all fields.");
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(
+            inviteData.email,
+            password
+          );
+          const user = userCredential.user;
+
+          await db.collection("users").doc(user.uid).set({
+            fullName,
+            email: inviteData.email,
+            role: inviteData.role,
+            companyId: inviteData.companyId,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          await db.collection("invites").doc(token).delete();
+
+          alert("Account created! Redirecting to dashboard...");
+          window.location.href = "dashboard.html";
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+
+      loadInvite();
+    </script>
+  </body>
+</html>
