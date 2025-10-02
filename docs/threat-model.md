@@ -1,7 +1,7 @@
 # 🧩 Threat Model — RiskShield Security Playground
 
 ## 🎯 Scope
-The **RiskShield app** is a demo web application built with Python/Streamlit (update if needed) and used as a **security playground** for SAST (Semgrep), DAST (OWASP ZAP), and AppSec automation.  
+The **RiskShield app** is a demo web application built with Python/Streamlit and used as a **security playground** for SAST (Semgrep), DAST (OWASP ZAP), and AppSec automation.  
 
 ### System Components
 - **Frontend / Static pages** → HTML templates served to end users
