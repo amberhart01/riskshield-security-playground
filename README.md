@@ -44,3 +44,5 @@ Short videos and screenshots live under `/assets/` and on my portfolio page.
   <source src="/assets/videos/riskshield-demo.mp4" type="video/mp4">
 </video>
 
+> **Note:** This repository and its contents are for demonstration purposes only.
+> No live systems, secrets, or production data are included.
